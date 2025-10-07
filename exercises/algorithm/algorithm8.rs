@@ -52,13 +52,15 @@ impl<T> Default for Queue<T> {
     }
 }
 
-pub struct myStack<T>
+// 将 myStack 改为 MyStack 以符合命名规范
+pub struct MyStack<T>
 {
 	//TODO
 	q1:Queue<T>,
 	q2:Queue<T>
 }
-impl<T> myStack<T> {
+
+impl<T> MyStack<T> {
     pub fn new() -> Self {
         Self {
 			//TODO
@@ -78,17 +80,18 @@ impl<T> myStack<T> {
         
         // Move all but the last element from q1 to q2
         while self.q1.size() > 1 {
-            let elem = self.q1.dequeue().unwrap();
+            // 修复借用问题：显式处理错误而不是使用 map_err
+            let elem = self.q1.dequeue().map_err(|_| "Stack is empty")?;
             self.q2.enqueue(elem);
         }
         
         // The last element is the one to return (stack top)
-        let result = self.q1.dequeue();
+        let result = self.q1.dequeue().map_err(|_| "Stack is empty")?;
         
         // Swap the queues
         std::mem::swap(&mut self.q1, &mut self.q2);
         
-        result.map_err(|_| "Stack is empty")
+        Ok(result)
     }
     pub fn is_empty(&self) -> bool {
 		//TODO
@@ -102,7 +105,7 @@ mod tests {
 	
 	#[test]
 	fn test_queue(){
-		let mut s = myStack::<i32>::new();
+		let mut s = MyStack::<i32>::new();  // 修改类型名为 MyStack
 		assert_eq!(s.pop(), Err("Stack is empty"));
         s.push(1);
         s.push(2);

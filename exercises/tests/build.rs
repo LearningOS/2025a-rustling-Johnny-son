@@ -9,9 +9,11 @@ fn main() {
     let timestamp = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap()
-        .as_secs(); // What's the use of this timestamp here?
+        .as_secs();
+    
+    // ✅ 修正：将 ":" 修改为 "="
     let your_command = format!(
-        "rustc-env:TEST_FOO={}",
+        "rustc-env=TEST_FOO={}",
         timestamp
     );
     println!("cargo:{}", your_command);

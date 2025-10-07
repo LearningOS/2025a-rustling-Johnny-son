@@ -4,7 +4,7 @@
 // languages, and it can even link within the code itself! It makes it through the extern
 // block, just like the code below.
 //
-// The short string after the `extern` keyword indicates which ABI the externally imported
+// The short string after the extern keyword indicates which ABI the externally imported
 // function would follow. In this exercise, "Rust" is used, while other variants exists like
 // "C" for standard C ABI, "stdcall" for the Windows ABI.
 //
@@ -31,11 +31,13 @@
 
 extern "Rust" {
     fn my_demo_function(a: u32) -> u32;
+    #[link_name = "my_demo_function"]
     fn my_demo_function_alias(a: u32) -> u32;
 }
 
 mod Foo {
     // No `extern` equals `extern "Rust"`.
+    #[no_mangle]
     fn my_demo_function(a: u32) -> u32 {
         a
     }

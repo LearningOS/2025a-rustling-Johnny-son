@@ -28,10 +28,30 @@ impl Graph for UndirectedGraph {
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>> {
         &self.adjacency_table
     }
+    fn add_node(&mut self, node: &str) -> bool {
+        //TODO
+		if self.adjacency_table.contains_key(node) {
+            false
+        } else {
+            self.adjacency_table.insert(node.to_string(), Vec::new());
+            true
+        }
+    }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let (from, to, weight) = edge;
+        
+        // For undirected graph, add both directions
+        self.add_node(from);
+        self.add_node(to);
+        
+        // Add edge from -> to
+        self.adjacency_table.get_mut(from).unwrap().push((to.to_string(), weight));
+        // Add edge to -> from
+        self.adjacency_table.get_mut(to).unwrap().push((from.to_string(), weight));
     }
 }
+
 pub trait Graph {
     fn new() -> Self;
     fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>>;

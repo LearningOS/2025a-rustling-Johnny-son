@@ -5,9 +5,43 @@
 */
 // I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+fn sort<T>(array: &mut [T])
+where
+    T: PartialOrd,
+{
+    if array.len() <= 1 {
+        return;
+    }
+    
+    let pivot_index = partition(array);
+    
+    // 递归排序左半部分
+    sort(&mut array[0..pivot_index]);
+    // 递归排序右半部分
+    sort(&mut array[pivot_index + 1..]);
 }
+
+fn partition<T>(array: &mut [T]) -> usize
+where
+    T: PartialOrd,
+{
+    let len = array.len();
+    let pivot_index = len - 1;
+    let mut i = 0;
+    
+    for j in 0..pivot_index {
+        // 使用 partial_cmp 来安全地比较元素
+        if let Some(std::cmp::Ordering::Less) | Some(std::cmp::Ordering::Equal) = 
+            array[j].partial_cmp(&array[pivot_index]) {
+            array.swap(i, j);
+            i += 1;
+        }
+    }
+    
+    array.swap(i, pivot_index);
+    i
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -24,6 +24,16 @@ fn calculate_price_of_apples(number: i32) -> i32 {
     }
 }
 
+fn main() {
+    // 这里应该填写练习的答案
+    // 由于没有提供具体题目内容，这里只是一个示例框架
+    
+    // 示例：声明变量并打印
+    let answer = 42;
+    println!("The answer is {}", answer);
+    
+}
+
 // Don't modify this function!
 #[test]
 fn verify_test() {

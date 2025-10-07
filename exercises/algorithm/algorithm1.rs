@@ -6,7 +6,6 @@
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
-use std::vec::*;
 
 #[derive(Debug)]
 struct Node<T> {
@@ -69,15 +68,60 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self
+    where T: Ord + Clone {
+        let mut dummy = Node::new(unsafe { std::mem::zeroed() });
+        let mut current = NonNull::from(&mut dummy);
+        
+        let mut a_ptr = list_a.start;
+        let mut b_ptr = list_b.start;
+        
+        unsafe {
+            while let (Some(a_node), Some(b_node)) = (a_ptr, b_ptr) {
+                if (*a_node.as_ptr()).val <= (*b_node.as_ptr()).val {
+                    (*current.as_ptr()).next = a_ptr;
+                    current = a_node;
+                    a_ptr = (*a_node.as_ptr()).next;
+                } else {
+                    (*current.as_ptr()).next = b_ptr;
+                    current = b_node;
+                    b_ptr = (*b_node.as_ptr()).next;
+                }
+            }
+            
+            if a_ptr.is_some() {
+                (*current.as_ptr()).next = a_ptr;
+            } else {
+                (*current.as_ptr()).next = b_ptr;
+            }
         }
-	}
+        
+        let mut merged = LinkedList::new();
+        merged.start = dummy.next;
+        if merged.start.is_none() {
+            merged.end = None;
+        } else {
+            // Find the end node
+            let mut ptr = merged.start;
+            unsafe {
+                while let Some(node_ptr) = ptr {
+                    if (*node_ptr.as_ptr()).next.is_none() {
+                        merged.end = Some(node_ptr);
+                        break;
+                    }
+                    ptr = (*node_ptr.as_ptr()).next;
+                }
+            }
+            // Set the length
+            merged.length = list_a.length + list_b.length;
+        }
+        
+        // Avoid dropping the original lists since we took ownership of their nodes
+        std::mem::forget(list_a);
+        std::mem::forget(list_b);
+        
+        merged
+    }
 }
 
 impl<T> Display for LinkedList<T>
